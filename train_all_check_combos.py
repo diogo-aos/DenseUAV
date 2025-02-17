@@ -206,3 +206,126 @@ with open("queue_combos.json", "w") as f:
     json.dump(final_list_of_dicts, f, indent=2)
     
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# remove directories that don't have a "pytorch_result_1.mat" file
+
+checkpoint_dir = Path("checkpoints/")
+
+# list all top level dirs in checkpoints
+checkpoint_dirs = [f for f in checkpoint_dir.iterdir() if f.is_dir()]
+checkpoint_dirs
+
+valid_runs = [d for d in checkpoint_dirs if (d / "pytorch_result_1.mat").exists()]
+valid_runs
+
+invalid = [d for d in checkpoint_dirs if d not in valid_runs]
+invalid
+
+import shutil
+
+for d in invalid:
+    shutil.rmtree(d)
+
+# 
+
+
+# remove logs that failed
+logs = [f for f in checkpoint_dir.iterdir() if f.is_file() and f.suffix == ".log"]
+logs
+
+# successful runs have somewhere "Training complete in"
+successful_runs = [f for f in logs if b"Training complete in" in f.read_bytes()]
+# remove all other logs
+failed_runs = [f for f in logs if f not in successful_runs]
+failed_runs
+
+for f in failed_runs:
+    f.unlink()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# load params of all valid runs, in file opts.yaml
+import yaml
+
+params = []
+for d in valid_runs:
+    with open(d / "opts.yaml") as f:
+        params.append(yaml.safe_load(f))
+params
+
+
+# load all combos
+with open("queue_combos.json") as f:
+    combos = json.load(f)
+
+combos
+
+queued_keys = list(combos[0].keys())
+
+done_combos = [
+    {k: combo[k] for k in queued_keys}
+    for combo in params
+]
+
+
+
+def check_if_combo_done(combo, checkpoint_dir):
+    import yaml
+    checkpoint_dir = Path(checkpoint_dir) # parent dir
+
+    # list all top level dirs in checkpoints
+    checkpoint_dirs = [f for f in checkpoint_dir.iterdir() if f.is_dir()]
+    checkpoint_dirs
+
+    valid_runs = [d for d in checkpoint_dirs if (d / "pytorch_result_1.mat").exists()]
+    valid_runs
+
+    params = []
+    for d in valid_runs:
+        with open(d / "opts.yaml") as f:
+            params.append(yaml.safe_load(f))
+
+    done_combos = [
+        {k: c[k] for k in list(combo.keys())}
+        for c in params
+    ]
+
+    return combo in done_combos
+
+
+
