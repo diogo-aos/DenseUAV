@@ -1,3 +1,22 @@
+docker run --rm -it --shm-size="1g" --gpus all -v /home/dasilva/datasets/DenseUAV:/datasets/DenseUAV -v $(pwd):/workspace denseuav
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <h1 align="center"> Vision-Based UAV Self-Positioning in Low-Altitude Urban Environments </h1>
 
 This repository contains code and dataset for the paper titled [Vision-Based UAV Self-Positioning in Low-Altitude Urban Environments](https://arxiv.org/abs/2201.09201). In this paper, we propose a method for accurately self-positioning unmanned aerial vehicles (UAVs) in challenging low-altitude urban environments using vision-based techniques. We provide the DenseUAV dataset and a Baseline model implementation to facilitate research in this task. Thank you for your kind attention.
